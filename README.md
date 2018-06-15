@@ -1,7 +1,7 @@
 # UNet-Keras-TF
 Basic implementation of the U-Net Convolutional Neural Network Architecture, implemented using Keras with a Tensorflow backend
 
-The dependencies list is not exhaustive - I have only mentioned the packages that came to mind. Others are probably needed, but the versioning is likely less important.
+The dependencies list is not exhaustive - I have only mentioned the packages that came to mind. Others are probably needed, but the versioning is likely less important. I also strongly recommend the use of a virtual environment when running this to avoid conflicts, as some of the packages are out-of-date compared to their most recent versions. Make sure to also check the CUDA and CUDNN requirements for Tensorflow if using tensorflow-gpu.
 
 Main dependencies/versions used (for building and running the U-Net):\
 numpy >=1.14.4\
