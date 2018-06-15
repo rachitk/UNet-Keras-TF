@@ -13,6 +13,6 @@ h5py >=2.8.0\
 Pillow ==5.1.0
 
 
-Other dependencies:
+Other dependencies:\
 SimpleITK =0.9.1 (for preprocessing images only)\ 
 matplotlib (only for debug purposes, for the purpose of viewing intermediate images)
