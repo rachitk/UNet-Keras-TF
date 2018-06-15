@@ -1,0 +1,11 @@
+car_files/
+modelFiles/
+modelFiles_old/
+input/
+aug/
+**/*.img
+**/*.hdr
+**/*.png
+**/*.jpg
+**/*.tif
+
