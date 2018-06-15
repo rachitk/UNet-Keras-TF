@@ -201,10 +201,10 @@ def dice_coef_loss(y_true, y_pred):
 
 #Define generators for the training images and mask images, making sure to apply the same augmentations to each and to confirm their final outputs coincide (augmented mask matches augmented image output)
 train_image_datagen = ImageDataGenerator(**data_aug_param)
-train_image_generator = train_image_datagen.flow_from_directory(train_image_dir, class_mode=None, seed=seed, color_mode=colorMode, target_size=inputTargetSize, batch_size=batchSize, save_to_dir="aug/train/")
+train_image_generator = train_image_datagen.flow_from_directory(train_image_dir, class_mode=None, seed=seed, color_mode=colorMode, target_size=inputTargetSize, batch_size=batchSize)
 
 train_mask_datagen = ImageDataGenerator(**data_aug_param)
-train_mask_generator = train_mask_datagen.flow_from_directory(train_mask_dir, class_mode=None, seed=seed, color_mode=colorMode, target_size=inputTargetSize, batch_size=batchSize, save_to_dir="aug/train_mask/")
+train_mask_generator = train_mask_datagen.flow_from_directory(train_mask_dir, class_mode=None, seed=seed, color_mode=colorMode, target_size=inputTargetSize, batch_size=batchSize)
 
 
 #Combine the training image and mask generators to create the training generator to be used
@@ -216,10 +216,10 @@ training_gen = itertools.izip(train_image_generator, train_mask_generator)
 
 #No need to use augmentation parameters for validation; just rescaling needed to define the same kind of generators for the test data set
 test_image_datagen = ImageDataGenerator(rescale = 1./255)
-test_image_generator = test_image_datagen.flow_from_directory(test_image_dir, class_mode=None, seed=seed, color_mode=colorMode, target_size=inputTargetSize, batch_size=batchSize, save_to_dir="aug/test/")
+test_image_generator = test_image_datagen.flow_from_directory(test_image_dir, class_mode=None, seed=seed, color_mode=colorMode, target_size=inputTargetSize, batch_size=batchSize)
 
 test_mask_datagen = ImageDataGenerator(rescale = 1./255)
-test_mask_generator = test_mask_datagen.flow_from_directory(test_mask_dir, class_mode=None, seed=seed, color_mode=colorMode, target_size=inputTargetSize, batch_size=batchSize, save_to_dir="aug/test_mask/")
+test_mask_generator = test_mask_datagen.flow_from_directory(test_mask_dir, class_mode=None, seed=seed, color_mode=colorMode, target_size=inputTargetSize, batch_size=batchSize)
 
 #Combine the testing image and mask generators to create the validation generator - don't use zip because it doesn't work as expected in Python2 (see training_gen definition and comment above)
 #validation_gen = zip(test_image_generator, test_mask_generator)
