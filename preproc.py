@@ -37,7 +37,7 @@ def preproc(inImgDir, outImgDir, dsFactor=5, ext=".img", outExt='.png'):
                 img_out = imgResample(img_orig, spacing=dsSpacing)
             else:
                 img_out = img_orig
-                img_out = sitk.Cast(sitk.RescaleIntensity(img_out, 0, 1), sitk.sitkUInt8) 
+                img_out = sitk.Cast(sitk.RescaleIntensity(img_out), sitk.sitkUInt8) 
             file_base = os.path.splitext(img_name)[0]
             imgWrite(img_out, outImgDir + file_base + "_ds" + outExt)
             

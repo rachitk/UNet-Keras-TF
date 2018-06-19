@@ -176,7 +176,7 @@ else:
     #return 2 * isct / (tf.reduce_sum(y_true) + tf.reduce_sum(y_pred))
     
 def dice_coef(y_true, y_pred):
-    smooth = 1
+    smooth = 1e-5
     y_true_f = K.flatten(y_true)
     y_pred_f = K.flatten(y_pred)
     intersection = K.sum(y_true_f * y_pred_f)
@@ -229,7 +229,7 @@ validation_gen = itertools.izip(test_image_generator, test_mask_generator)
 
 
 ##DEBUG FOR VARIOUS PURPOSES
-#img, msk = next(training_gen)
+img, msk = next(training_gen)
 
 #plt.imshow(img[0])
 #plt.imshow(msk[0])
@@ -237,9 +237,13 @@ validation_gen = itertools.izip(test_image_generator, test_mask_generator)
 #plt.imshow(img[1])
 #plt.imshow(msk[1])
 
-#print img[0].shape[2]
+print img[0].shape
+print img[0].dtype
 
+print msk[0].shape
+print msk[0].dtype
 
+raw_input("Press Enter to continue...")
 
 if not usePrebuiltModel:
     #U-Net architecture implementation

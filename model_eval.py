@@ -52,7 +52,7 @@ def load_image(infilename):
     img = Image.open(infilename).convert('L')
     img.load()
     img = img.resize((256,256), Image.ANTIALIAS)
-    data = np.asarray(img, dtype="uint8")
+    data = np.asarray(img, dtype="float32")
     return data
 
 def save_image(npdata, outfilename):
@@ -61,7 +61,7 @@ def save_image(npdata, outfilename):
 
 
 
-loadModelFile = 'modelFiles_old/fullModel.h5'   #Define where the model should be loaded from if using a prebuilt one
+loadModelFile = 'modelFiles/fullModel.h5'   #Define where the model should be loaded from if using a prebuilt one
 
 inFile = 'input/try/0.png'
 
@@ -70,6 +70,7 @@ model = load_model(loadModelFile, custom_objects={'dice_coef_loss': dice_coef_lo
 
 im = load_image(inFile)
 
+np.set_printoptions(threshold=np.nan)   #debug only
 print im.dtype
 print im
 
