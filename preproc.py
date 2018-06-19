@@ -22,7 +22,7 @@ def main():
     if not os.path.exists(out_image_dir): os.makedirs(out_image_dir)
     if not os.path.exists(out_mask_dir): os.makedirs(out_mask_dir)
         
-    #preproc(raw_image_dir, out_image_dir, dsFactor, expectedExt, outExt)
+    preproc(raw_image_dir, out_image_dir, dsFactor, expectedExt, outExt)
     preproc(raw_mask_dir, out_mask_dir, dsFactor/10, expectedExt, outExt)
 
 
@@ -37,7 +37,7 @@ def preproc(inImgDir, outImgDir, dsFactor=5, ext=".img", outExt='.png'):
                 img_out = imgResample(img_orig, spacing=dsSpacing)
             else:
                 img_out = img_orig
-            img_out = sitk.Cast(sitk.RescaleIntensity(img_out), sitk.sitkUInt8) 
+                img_out = sitk.Cast(sitk.RescaleIntensity(img_out, 0, 1), sitk.sitkUInt8) 
             file_base = os.path.splitext(img_name)[0]
             imgWrite(img_out, outImgDir + file_base + "_ds" + outExt)
             

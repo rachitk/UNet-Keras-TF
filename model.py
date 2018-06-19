@@ -42,7 +42,7 @@ CNN_name = 'test'  #name the CNN for saving weights (do if training multiple or 
 
 
 #SUPER IMPORTANT - DEFINE WHICH GPU TO USE, IF RELEVANT
-os.environ['CUDA_VISIBLE_DEVICES'] = '0' # or '1' or whichever GPU is available on your machine
+os.environ['CUDA_VISIBLE_DEVICES'] = '1' # or '1' or whichever GPU is available on your machine
 #use nvidia-smi to see which devices are currently in use by one person or another, and use the one not in use.
 
 
@@ -111,7 +111,7 @@ valEpochSteps = 32  #number of validation steps per epoch (how many batches to t
 
 learningRate = 1e-4  #this is almost always this value for the Adam optimizer, though other optimizers may not even use a learning rate value or may use different ones.
 
-numEpochs = 400  #one of the most important things: how many epochs should the network go through before ending?
+numEpochs = 5  #one of the most important things: how many epochs should the network go through before ending?
 
 
 
@@ -288,7 +288,8 @@ if not usePrebuiltModel:
     outputs = Conv2D(1, (1, 1), activation='sigmoid') (c9)
 
     model = Model(inputs=[inputs], outputs=[outputs])
-    model.compile(optimizer=Adam(learningRate), loss=dice_coef_loss, metrics=[dice_coef])
+    #model.compile(optimizer=Adam(learningRate), loss=dice_coef_loss, metrics=[dice_coef])
+    model.compile(optimizer=Adam(learningRate), loss='binary_crossentropy', metrics=[dice_coef])
     model.summary()
 else:
     model = load_model(loadModelFile, custom_objects={'dice_coef_loss': dice_coef_loss, 'dice_coef': dice_coef})

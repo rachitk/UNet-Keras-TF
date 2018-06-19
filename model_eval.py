@@ -35,7 +35,7 @@ import itertools
 from PIL import Image
 
 
-
+os.environ['CUDA_VISIBLE_DEVICES'] = '1' # or '1' or whichever GPU is available on your machine
 
 def dice_coef(y_true, y_pred):
     smooth = 1
@@ -61,16 +61,19 @@ def save_image(npdata, outfilename):
 
 
 
-loadModelFile = 'modelFiles/fullModel.h5'   #Define where the model should be loaded from if using a prebuilt one
+loadModelFile = 'modelFiles_old/fullModel.h5'   #Define where the model should be loaded from if using a prebuilt one
 
-inFile = 'input/try/0.jpg'
+inFile = 'input/try/0.png'
 
 
 model = load_model(loadModelFile, custom_objects={'dice_coef_loss': dice_coef_loss, 'dice_coef': dice_coef})
 
 im = load_image(inFile)
 
-save_image(im, 'input/try/0_res.jpg')
+print im.dtype
+print im
+
+save_image(im, 'input/try/0_res.png')
 
 im = np.reshape(im, (1,256,256,1))
 
@@ -79,5 +82,8 @@ out = model.predict(im)
 outFile = 'input/try_out/0_pred.png'
 
 out = np.reshape(out, (256,256))
+
+print out.dtype
+print out
 
 save_image(out, outFile)

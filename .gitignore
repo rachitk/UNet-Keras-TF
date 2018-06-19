@@ -2,6 +2,7 @@ car_files/
 modelFiles/
 modelFiles_old/
 input/
+input_old/
 aug/
 **/*.img
 **/*.hdr
