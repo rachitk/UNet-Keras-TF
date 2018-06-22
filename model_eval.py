@@ -61,7 +61,7 @@ def save_image(npdata, outfilename):
 
 
 
-loadModelFile = 'modelFiles/fullModel.h5'   #Define where the model should be loaded from if using a prebuilt one
+loadModelFile = 'modelFiles_bak/fullModel.h5'   #Define where the model should be loaded from if using a prebuilt one
 
 inFile = 'input/try/0.png'
 
@@ -82,7 +82,8 @@ out = model.predict(im)
 
 outFile = 'input/try_out/0_pred.png'
 
-out = np.reshape(out, (256,256))
+out = np.reshape((out), (256,256))
+out = out * (255.0/out.max())
 
 print out.dtype
 print out

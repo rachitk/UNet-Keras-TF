@@ -104,14 +104,14 @@ resizeHeight = 256  #height of image to be entered into CNN
 resizeWidth = 256  #width of image to be entered into CNN
 numChannels = 1   #number of channels of image to be entered into CNN; 1 is greyscale, 3 is rgb  --should always be set to 1, because the CNN can't handle 3 as it is currently.
 
-batchSize = 4   #Define batch sizes (how many images will be loaded into memory at a time) - same for both training and validation in this implementation
+batchSize = 8   #Define batch sizes (how many images will be loaded into memory at a time) - same for both training and validation in this implementation
 
 trainEpochSteps = 64  #number of training steps per epoch (how many batches to take out per epoch), typically the number of training images you have divided by the number of images in each batch to cover all the images
 valEpochSteps = 32  #number of validation steps per epoch (how many batches to take out per epoch), typically the number of validation images you have divided by the number of images in each batch to cover all the images
 
 learningRate = 1e-4  #this is almost always this value for the Adam optimizer, though other optimizers may not even use a learning rate value or may use different ones.
 
-numEpochs = 5  #one of the most important things: how many epochs should the network go through before ending?
+numEpochs = 200  #one of the most important things: how many epochs should the network go through before ending?
 
 
 
@@ -229,7 +229,7 @@ validation_gen = itertools.izip(test_image_generator, test_mask_generator)
 
 
 ##DEBUG FOR VARIOUS PURPOSES
-img, msk = next(training_gen)
+#img, msk = next(training_gen)
 
 #plt.imshow(img[0])
 #plt.imshow(msk[0])
@@ -237,13 +237,13 @@ img, msk = next(training_gen)
 #plt.imshow(img[1])
 #plt.imshow(msk[1])
 
-print img[0].shape
-print img[0].dtype
+#print img[0].shape
+#print img[0].dtype
 
-print msk[0].shape
-print msk[0].dtype
+#print msk[0].shape
+#print msk[0].dtype
 
-raw_input("Press Enter to continue...")
+#raw_input("Press Enter to continue...")
 
 if not usePrebuiltModel:
     #U-Net architecture implementation
@@ -292,8 +292,8 @@ if not usePrebuiltModel:
     outputs = Conv2D(1, (1, 1), activation='sigmoid') (c9)
 
     model = Model(inputs=[inputs], outputs=[outputs])
-    #model.compile(optimizer=Adam(learningRate), loss=dice_coef_loss, metrics=[dice_coef])
-    model.compile(optimizer=Adam(learningRate), loss='binary_crossentropy', metrics=[dice_coef])
+    model.compile(optimizer=Adam(learningRate), loss=dice_coef_loss, metrics=[dice_coef])
+    #model.compile(optimizer=Adam(learningRate), loss='binary_crossentropy', metrics=[dice_coef])
     model.summary()
 else:
     model = load_model(loadModelFile, custom_objects={'dice_coef_loss': dice_coef_loss, 'dice_coef': dice_coef})
