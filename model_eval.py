@@ -61,7 +61,7 @@ def save_image(npdata, outfilename):
 
 
 
-loadModelFile = 'modelFiles_bak/fullModel.h5'   #Define where the model should be loaded from if using a prebuilt one
+loadModelFile = 'modelFiles/fullModel.h5'   #Define where the model should be loaded from if using a prebuilt one
 
 inFile = 'input/try/0.png'
 

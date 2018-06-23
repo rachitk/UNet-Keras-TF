@@ -111,7 +111,7 @@ valEpochSteps = 32  #number of validation steps per epoch (how many batches to t
 
 learningRate = 1e-4  #this is almost always this value for the Adam optimizer, though other optimizers may not even use a learning rate value or may use different ones.
 
-numEpochs = 200  #one of the most important things: how many epochs should the network go through before ending?
+numEpochs = 4000  #one of the most important things: how many epochs should the network go through before ending?
 
 
 
