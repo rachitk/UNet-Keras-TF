@@ -34,6 +34,7 @@ import itertools
 
 from PIL import Image
 
+import SimpleITK as sitk
 
 os.environ['CUDA_VISIBLE_DEVICES'] = '1' # or '1' or whichever GPU is available on your machine
 
@@ -61,7 +62,7 @@ def save_image(npdata, outfilename):
 
 
 
-loadModelFile = 'modelFiles/fullModel.h5'   #Define where the model should be loaded from if using a prebuilt one
+loadModelFile = 'modelFiles_2kl1/fullModel.h5'   #Define where the model should be loaded from if using a prebuilt one
 
 inFile = 'input/try/0.png'
 
@@ -69,23 +70,24 @@ inFile = 'input/try/0.png'
 model = load_model(loadModelFile, custom_objects={'dice_coef_loss': dice_coef_loss, 'dice_coef': dice_coef})
 
 im = load_image(inFile)
-
-np.set_printoptions(threshold=np.nan)   #debug only
-print im.dtype
-print im
-
 save_image(im, 'input/try/0_res.png')
+
+im = im * 1./255
 
 im = np.reshape(im, (1,256,256,1))
 
 out = model.predict(im)
 
-outFile = 'input/try_out/0_pred.png'
+outFile = 'input/try_out/0_pred.img'
 
 out = np.reshape((out), (256,256))
-out = out * (255.0/out.max())
+out = out * (255.0 / out.max())
 
+np.set_printoptions(threshold=np.nan)   #debug only
 print out.dtype
 print out
 
-save_image(out, outFile)
+outImg = sitk.GetImageFromArray(out)
+sitk.WriteImage(outImg, outFile)
+
+#save_image(out, outFile)
