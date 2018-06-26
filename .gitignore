@@ -4,6 +4,8 @@ modelFiles_old/
 input/
 input_old/
 aug/
+resized/
+older_files/
 **/*.img
 **/*.hdr
 **/*.png
