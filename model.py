@@ -32,6 +32,8 @@ import os
 
 import itertools
 
+from unet_build import *
+
 
 ##VERSIONS: Tensorflow 1.2.0; Keras 2.0.6
 #Should work with later versions just fine, though some minor changes to imports may be useful.
@@ -100,19 +102,20 @@ test_mask_dir = "input/test_masks/"
 
 
 #Define values for the CNN implementation
-resizeHeight = 256  #height of image to be entered into CNN
-resizeWidth = 256  #width of image to be entered into CNN
+resizeHeight = 512  #height of image to be entered into CNN
+resizeWidth = 512  #width of image to be entered into CNN
 numChannels = 1   #number of channels of image to be entered into CNN; 1 is greyscale, 3 is rgb  --should always be set to 1, because the CNN can't handle 3 as it is currently.
 
-batchSize = 8   #Define batch sizes (how many images will be loaded into memory at a time) - same for both training and validation in this implementation
+batchSize = 2   #Define batch sizes (how many images will be loaded into memory at a time) - same for both training and validation in this implementation
 
-trainEpochSteps = 64  #number of training steps per epoch (how many batches to take out per epoch), typically the number of training images you have divided by the number of images in each batch to cover all the images
+trainEpochSteps = 32  #number of training steps per epoch (how many batches to take out per epoch), typically the number of training images you have divided by the number of images in each batch to cover all the images
 valEpochSteps = 8  #number of validation steps per epoch (how many batches to take out per epoch), typically the number of validation images you have divided by the number of images in each batch to cover all the images
+
+numEpochs = 100  #one of the most important things: how many epochs should the network go through before ending?
 
 learningRate = 1e-4  #this is almost always this value for the Adam optimizer, though other optimizers may not even use a learning rate value or may use different ones.
 
-numEpochs = 20  #one of the most important things: how many epochs should the network go through before ending?
-
+lossFunc = 'binary_crossentropy'  #can be dice_coef_loss, mean_iou, or binary_crossentropy (AS STRINGS)
 
 
 #Define values for the run
@@ -164,40 +167,7 @@ else:
 
 
 
-#Define dice coefficient function as metric
-#def dice_coeff(y_true, y_pred):
-    #smooth = 1e-5
-    
-    #y_true = tf.round(tf.reshape(y_true, [-1]))
-    #y_pred = tf.round(tf.reshape(y_pred, [-1]))
-    
-    #isct = tf.reduce_sum(y_true * y_pred)
-    
-    #return 2 * isct / (tf.reduce_sum(y_true) + tf.reduce_sum(y_pred))
-    
-def dice_coef(y_true, y_pred):
-    smooth = 1e-5
-    y_true_f = K.flatten(y_true)
-    y_pred_f = K.flatten(y_pred)
-    intersection = K.sum(y_true_f * y_pred_f)
-    return (2. * intersection + smooth) / (K.sum(y_true_f) + K.sum(y_pred_f) + smooth)
-
-def dice_coef_loss(y_true, y_pred):
-    return 1-dice_coef(y_true, y_pred)
-    
-## Define IoU metric
-#def mean_iou(y_true, y_pred):
-    #prec = []
-    #for t in np.arange(0.5, 1.0, 0.05):
-        #y_pred_ = tf.to_int32(y_pred > t)
-        #score, up_opt = tf.metrics.mean_iou(y_true, y_pred_, 2)
-        #K.get_session().run(tf.local_variables_initializer())
-        #with tf.control_dependencies([up_opt]):
-            #score = tf.identity(score)
-        #prec.append(score)
-    #return K.mean(K.stack(prec), axis=0)
-
-    
+  
 
 #Define generators for the training images and mask images, making sure to apply the same augmentations to each and to confirm their final outputs coincide (augmented mask matches augmented image output)
 train_image_datagen = ImageDataGenerator(**data_aug_param)
@@ -239,68 +209,54 @@ img, msk = next(training_gen)
 
 np.set_printoptions(threshold=np.nan) 
 
-print img[0].shape
-print img[0].dtype
-print img[0]
+#print img[0].shape
+#print img[0].dtype
+#print img[0]
 
 #print msk[0].shape
 #print msk[0].dtype
 #print msk[0]
 
-raw_input("Press Enter to commit to building the network...")
+
+print("Building Unet of size (" + str(resizeHeight) + ", " + str(resizeWidth) + ")")
+print("Loss function is " + str(lossFunc))
+print("Learning rate is " + str(learningRate))
+print("Number of epochs will be " + str(numEpochs))
+
+raw_input("Press enter to build model with above parameters...")
+
 
 if not usePrebuiltModel:
-    #U-Net architecture implementation
-
-    inputs = Input((resizeHeight, resizeWidth, numChannels))
-
-    c1 = Conv2D(8, (3, 3), activation='relu', padding='same') (inputs)
-    c1 = Conv2D(8, (3, 3), activation='relu', padding='same') (c1)
-    p1 = MaxPooling2D((2, 2)) (c1)
-
-    c2 = Conv2D(16, (3, 3), activation='relu', padding='same') (p1)
-    c2 = Conv2D(16, (3, 3), activation='relu', padding='same') (c2)
-    p2 = MaxPooling2D((2, 2)) (c2)
-
-    c3 = Conv2D(32, (3, 3), activation='relu', padding='same') (p2)
-    c3 = Conv2D(32, (3, 3), activation='relu', padding='same') (c3)
-    p3 = MaxPooling2D((2, 2)) (c3)
-
-    c4 = Conv2D(64, (3, 3), activation='relu', padding='same') (p3)
-    c4 = Conv2D(64, (3, 3), activation='relu', padding='same') (c4)
-    p4 = MaxPooling2D(pool_size=(2, 2)) (c4)
-
-    c5 = Conv2D(128, (3, 3), activation='relu', padding='same') (p4)
-    c5 = Conv2D(128, (3, 3), activation='relu', padding='same') (c5)
-
-    u6 = Conv2DTranspose(64, (2, 2), strides=(2, 2), padding='same') (c5)
-    u6 = concatenate([u6, c4])
-    c6 = Conv2D(64, (3, 3), activation='relu', padding='same') (u6)
-    c6 = Conv2D(64, (3, 3), activation='relu', padding='same') (c6)
-
-    u7 = Conv2DTranspose(32, (2, 2), strides=(2, 2), padding='same') (c6)
-    u7 = concatenate([u7, c3])
-    c7 = Conv2D(32, (3, 3), activation='relu', padding='same') (u7)
-    c7 = Conv2D(32, (3, 3), activation='relu', padding='same') (c7)
-
-    u8 = Conv2DTranspose(16, (2, 2), strides=(2, 2), padding='same') (c7)
-    u8 = concatenate([u8, c2])
-    c8 = Conv2D(16, (3, 3), activation='relu', padding='same') (u8)
-    c8 = Conv2D(16, (3, 3), activation='relu', padding='same') (c8)
-
-    u9 = Conv2DTranspose(8, (2, 2), strides=(2, 2), padding='same') (c8)
-    u9 = concatenate([u9, c1], axis=3)
-    c9 = Conv2D(8, (3, 3), activation='relu', padding='same') (u9)
-    c9 = Conv2D(8, (3, 3), activation='relu', padding='same') (c9)
-
-    outputs = Conv2D(1, (1, 1), activation='sigmoid') (c9)
-
-    model = Model(inputs=[inputs], outputs=[outputs])
-    #model.compile(optimizer=Adam(learningRate), loss=dice_coef_loss, metrics=[dice_coef])
-    model.compile(optimizer=Adam(learningRate), loss='binary_crossentropy', metrics=[dice_coef])
+    
+    if lossFunc=='dice_coef_loss':
+        lossFunc = dice_coef
+    elif lossFunc=='mean_iou':
+        lossFunc = mean_iou
+    else:
+        lossFunc = 'binary_crossentropy'
+        
+    
+    if resizeHeight==128 and resizeWidth==128:
+        model = get_unet_128(input_shape=(resizeHeight, resizeWidth, numChannels), num_classes=1, 
+                             learn_rate = learningRate, loss_func=lossFunc, metric_list=[dice_coef])
+    elif resizeHeight==256 and resizeWidth==256:
+        model = get_unet_256(input_shape=(resizeHeight, resizeWidth, numChannels), num_classes=1, 
+                             learn_rate = learningRate, loss_func=lossFunc, metric_list=[dice_coef])
+    elif resizeHeight==512 and resizeWidth==512:
+        model = get_unet_512(input_shape=(resizeHeight, resizeWidth, numChannels), num_classes=1, 
+                             learn_rate = learningRate, loss_func=lossFunc, metric_list=[dice_coef])
+    elif resizeHeight==1024 and resizeWidth==1024:
+        model = get_unet_1024(input_shape=(resizeHeight, resizeWidth, numChannels), num_classes=1, 
+                              learn_rate = learningRate, loss_func=lossFunc, metric_list=[dice_coef])
+    else:
+        print "Input doesn't match one of the standard UNet sizes, code will error soon because no model was created..."
+        print "Yes, I know this is bad practice, and I'll fix it soon to exit gracefully."
+        
     model.summary()
+    
 else:
     model = load_model(loadModelFile, custom_objects={'dice_coef_loss': dice_coef_loss, 'dice_coef': dice_coef})
+    model.summary()
     
     
 if usePremadeWeights:

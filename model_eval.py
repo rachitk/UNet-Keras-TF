@@ -48,6 +48,18 @@ def dice_coef(y_true, y_pred):
 def dice_coef_loss(y_true, y_pred):
     return 1-dice_coef(y_true, y_pred)
 
+## Define IoU metric
+def mean_iou(y_true, y_pred):
+    prec = []
+    for t in np.arange(0.5, 1.0, 0.05):
+        y_pred_ = tf.to_int32(y_pred > t)
+        score, up_opt = tf.metrics.mean_iou(y_true, y_pred_, 2)
+        K.get_session().run(tf.local_variables_initializer())
+        with tf.control_dependencies([up_opt]):
+            score = tf.identity(score)
+        prec.append(score)
+    return K.mean(K.stack(prec), axis=0)
+
 
 def load_image(infilename):
     img = Image.open(infilename).convert('L')
@@ -62,12 +74,13 @@ def save_image(npdata, outfilename):
 
 
 
-loadModelFile = 'modelFiles_2kl1/fullModel.h5'   #Define where the model should be loaded from if using a prebuilt one
+loadModelFile = 'modelFiles/fullModel.h5'   #Define where the model should be loaded from if using a prebuilt one
 
 inFile = 'input/try/0.png'
 
 
-model = load_model(loadModelFile, custom_objects={'dice_coef_loss': dice_coef_loss, 'dice_coef': dice_coef})
+model = load_model(loadModelFile, custom_objects={'dice_coef_loss': dice_coef_loss, 'dice_coef': dice_coef, 
+                                                  'mean_iou': mean_iou})
 
 im = load_image(inFile)
 save_image(im, 'input/try/0_res.png')
@@ -83,9 +96,9 @@ outFile = 'input/try_out/0_pred.img'
 out = np.reshape((out), (256,256))
 out = out * (255.0 / out.max())
 
-np.set_printoptions(threshold=np.nan)   #debug only
-print out.dtype
-print out
+#np.set_printoptions(threshold=np.nan)   #debug only
+#print out.dtype
+#print out
 
 outImg = sitk.GetImageFromArray(out)
 sitk.WriteImage(outImg, outFile)
