@@ -106,12 +106,12 @@ resizeHeight = 512  #height of image to be entered into CNN
 resizeWidth = 512  #width of image to be entered into CNN
 numChannels = 1   #number of channels of image to be entered into CNN; 1 is greyscale, 3 is rgb  --should always be set to 1, because the CNN can't handle 3 as it is currently.
 
-batchSize = 2   #Define batch sizes (how many images will be loaded into memory at a time) - same for both training and validation in this implementation
+batchSize = 4   #Define batch sizes (how many images will be loaded into memory at a time) - same for both training and validation in this implementation
 
 trainEpochSteps = 32  #number of training steps per epoch (how many batches to take out per epoch), typically the number of training images you have divided by the number of images in each batch to cover all the images
 valEpochSteps = 8  #number of validation steps per epoch (how many batches to take out per epoch), typically the number of validation images you have divided by the number of images in each batch to cover all the images
 
-numEpochs = 100  #one of the most important things: how many epochs should the network go through before ending?
+numEpochs = 2000  #one of the most important things: how many epochs should the network go through before ending?
 
 learningRate = 1e-4  #this is almost always this value for the Adam optimizer, though other optimizers may not even use a learning rate value or may use different ones.
 
@@ -136,13 +136,13 @@ saveWeightDir = 'modelFiles/weights/'    #Define where to save the progressive w
 
 
 
-#Define data augmentation parameters for training
+#Define data augmentation parameters for training; not using shear because it's better for image classification rather than for actual segmentation, but it may be useful for future kinds of images, so it's just commented out
 data_aug_param = dict(rotation_range=90.,
                      width_shift_range=0.1,
                      height_shift_range=0.1,
                      zoom_range=0.2,
                      rescale=1./255,
-                     shear_range = 0.2,
+                     #shear_range = 0.2,
                      horizontal_flip = True,
                      vertical_flip = True)
 

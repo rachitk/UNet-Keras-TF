@@ -64,7 +64,7 @@ def mean_iou(y_true, y_pred):
 def load_image(infilename):
     img = Image.open(infilename).convert('L')
     img.load()
-    img = img.resize((256,256), Image.ANTIALIAS)
+    img = img.resize((512,512), Image.ANTIALIAS)
     data = np.asarray(img, dtype="float32")
     return data
 
@@ -87,13 +87,13 @@ save_image(im, 'input/try/0_res.png')
 
 im = im * 1./255
 
-im = np.reshape(im, (1,256,256,1))
+im = np.reshape(im, (1,512,512,1))
 
 out = model.predict(im)
 
 outFile = 'input/try_out/0_pred.img'
 
-out = np.reshape((out), (256,256))
+out = np.reshape((out), (512,512))
 out = out * (255.0 / out.max())
 
 #np.set_printoptions(threshold=np.nan)   #debug only
