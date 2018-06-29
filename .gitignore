@@ -11,4 +11,6 @@ older_files/
 **/*.png
 **/*.jpg
 **/*.tif
-
+.directory
+modelFiles_2/
+*.pyc
