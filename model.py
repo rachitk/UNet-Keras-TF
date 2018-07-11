@@ -111,9 +111,9 @@ batchSize = 4   #Define batch sizes (how many images will be loaded into memory 
 trainEpochSteps = 32  #number of training steps per epoch (how many batches to take out per epoch), typically the number of training images you have divided by the number of images in each batch to cover all the images
 valEpochSteps = 8  #number of validation steps per epoch (how many batches to take out per epoch), typically the number of validation images you have divided by the number of images in each batch to cover all the images
 
-numEpochs = 2000  #one of the most important things: how many epochs should the network go through before ending?
+numEpochs = 4000  #one of the most important things: how many epochs should the network go through before ending?
 
-learningRate = 1e-4  #this is almost always this value for the Adam optimizer, though other optimizers may not even use a learning rate value or may use different ones.
+learningRate = 1e-4  #this is almost 1e-4 for the Adam optimizer, though other optimizers may not even use a learning rate value or may use different ones.
 
 lossFunc = 'binary_crossentropy'  #can be dice_coef_loss, mean_iou, or binary_crossentropy (AS STRINGS)
 
