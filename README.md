@@ -16,3 +16,5 @@ Pillow ==5.1.0
 Other dependencies:\
 SimpleITK =0.9.1 (for preprocessing images only)\
 matplotlib (only for debug purposes, for the purpose of viewing intermediate images)
+
+This project is not actively maintained as I am currently working on other projects, but will likely be extended in the future by either me or other researchers.
